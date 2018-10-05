@@ -37,18 +37,41 @@ func (g *PiGen) NextDigit() int64 {
 	i := g.i
 
 	bi3MulI := mul(bi3, i)
-	u := mul(mul(bi3, add(bi3MulI, bi1)), add(bi3MulI, bi2))
-	y := div(add(mul(q, sub(mul(bi27, i), bi12)), mul(bi5, r)), mul(bi5, t))
+	u := mulL(
+		mulL(add(bi3MulI, bi1), bi3),
+		add(bi3MulI, bi2),
+	)
+	y := divL(
+		addL(
+			mulL(subL(mul(bi27, i), bi12), q),
+			mul(bi5, r),
+		),
+		mul(bi5, t),
+	)
 
-	g.q = mul(mul(mul(bi10, q), i), sub(mul(bi2, i), bi1))
-	g.r = mul(mul(bi10, u), sub(add(mul(q, sub(mul(bi5, i), bi2)), r), mul(y, t)))
-	g.t = mul(t, u)
-	g.i = add(i, bi1)
+	g.q = mulL(
+		mulL(mul(bi10, q), i),
+		subL(mul(bi2, i), bi1),
+	)
+	g.r = mulL(
+		subL(
+			addL(
+				mulL(subL(mul(bi5, i), bi2), q),
+				r,
+			),
+			mul(y, t),
+		),
+		mul(bi10, u),
+	)
+	g.t = mulL(t, u)
+	g.i = addL(i, bi1)
 
 	return y.Int64()
 }
 
-func mul(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Mul(x, y) }
-func div(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Div(x, y) }
-func add(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Add(x, y) }
-func sub(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Sub(x, y) }
+func mul(x *big.Int, y *big.Int) *big.Int  { return new(big.Int).Mul(x, y) }
+func mulL(x *big.Int, y *big.Int) *big.Int { return x.Mul(x, y) }
+func divL(x *big.Int, y *big.Int) *big.Int { return x.Div(x, y) }
+func add(x *big.Int, y *big.Int) *big.Int  { return new(big.Int).Add(x, y) }
+func addL(x *big.Int, y *big.Int) *big.Int { return x.Add(x, y) }
+func subL(x *big.Int, y *big.Int) *big.Int { return x.Sub(x, y) }
