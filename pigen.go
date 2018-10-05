@@ -49,9 +49,6 @@ func (g *PiGen) NextDigit() int64 {
 }
 
 func mul(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Mul(x, y) }
-
 func div(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Div(x, y) }
-
 func add(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Add(x, y) }
-
 func sub(x *big.Int, y *big.Int) *big.Int { return new(big.Int).Sub(x, y) }
