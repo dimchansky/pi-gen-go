@@ -9,7 +9,7 @@
 [7]: https://codecov.io/gh/dimchansky/pi-gen-go/branch/master/graph/badge.svg
 [8]: https://codecov.io/gh/dimchansky/pi-gen-go
 
-The algorithm for generating the digits of π sequentially in pure Go.
+The implementation of algorithm for generating the digits of π sequentially in pure Go.
 
 ## Example
 
