@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/dimchansky/pi-gen-go"
+	pigen "github.com/dimchansky/pi-gen-go"
 )
 
 func main() {
