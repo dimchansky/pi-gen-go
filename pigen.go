@@ -2,11 +2,11 @@ package pigen
 
 import "math/big"
 
-// PiGen is pi digits generator based on the formula:
+// PiGen is π digits generator based on the formula:
 //
-// > piG3 = g(1,180,60,2) where
-// >   g(q,r,t,i) = let (u,y)=(3*(3*i+1)*(3*i+2),div(q*(27*i-12)+5*r)(5*t))
-// >                in y : g(10*q*i*(2*i-1),10*u*(q*(5*i-2)+r-y*t),t*u,i+1)
+//	 piG3 = g(1,180,60,2) where
+//	   g(q,r,t,i) = let (u,y)=(3*(3*i+1)*(3*i+2),div(q*(27*i-12)+5*r)(5*t))
+//	                in y : g(10*q*i*(2*i-1),10*u*(q*(5*i-2)+r-y*t),t*u,i+1)
 type PiGen struct {
 	q *big.Int
 	r *big.Int
@@ -14,7 +14,7 @@ type PiGen struct {
 	i *big.Int
 }
 
-// New creates new instance of PiGen
+// New creates new instance of PiGen.
 func New() *PiGen {
 	return &PiGen{q: big.NewInt(1), r: big.NewInt(180), t: big.NewInt(60), i: big.NewInt(2)}
 }
@@ -29,7 +29,7 @@ var (
 	bi27 = big.NewInt(27)
 )
 
-// NextDigit returns next digit of pi
+// NextDigit returns next digit of π.
 func (g *PiGen) NextDigit() int64 {
 	q := g.q
 	r := g.r
