@@ -23,3 +23,17 @@ script:
 after_success:
   - make cover
   - bash <(curl -s https://codecov.io/bash) -s ./${ARTIFACTS_DIR}/.cover
+  - make cmdx
+
+deploy:
+  provider: releases
+  api_key:
+    secure: pZLWAqU0SPuyPBE6Ga/idQrjO7o2ziiukxzAhqRKHcuxxtYTuQQh4AYMgUmhb0MtSr8jDnjsXsXHnsKN22jc7zFsGEPV5VtpFNTq5UbRToi1Pmn1iQHRlrA3FoARARKG09Rkidkcd49XyLs9NkYjnoH/gmjytJF04L7MBAeQFr5H+2D1+gFYRWBilPdh8S4PAmo52i7ieKc7g9T3uv+83XxlSYDGP5v7HEdfbkNO6qHPiNGR6xSJ8CFS1T1CWZvDP/8Dmj60cwixARvsN5qnXkPakDua0zTqS8R2d8zogg1F3QRCstMHOECeLkVXHdZBLO/nXqYH+gLR1aGid5x+J+3VELxo6+v4iyQaTme+hArWwZGC10HB/0CpOS9hKphNluGAgYIvlTPIW/58zvcmf3Q5RW1CRYB1ATel/5XOscKYG1GZW0Wo4nQrYN7pxV6H+AwLSxufYZSQ/Owd2MC1tweBgus1zjOdQHRNkpIEd71Ly1ZzZchbVUCzGZtq3FsMUAOYk438x2LS2OK5qITFrcpEdhO1ox2+On8sM2B1JdspzDJQVQoxcnCEctQTAJUIiB9QU2q6Gn+zl0ec3aafgq3tUjPGXXaSiVcXVclCFbGwi/4et6F0zchOlK0lOnmZedjwicBf/3LBBEjDHRggh+u3b2YprJRknTEMSWTVEV4=
+  file: ${ARTIFACTS_DIR}/*.{zip,tgz}
+  file_glob: true
+  skip_cleanup: true
+  overwrite: true
+  draft: true
+  on:
+    repo: ${TRAVIS_REPO_SLUG}
+    tags: true

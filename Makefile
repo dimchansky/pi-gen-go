@@ -3,13 +3,14 @@ SHELL := bash
 ARTIFACTS_DIR := $(if $(ARTIFACTS_DIR),$(ARTIFACTS_DIR),bin)
 
 PKGS ?= $(shell go list ./...)
+CMDS ?= $(shell ls -d ./cmd/*/ | xargs -L1 basename | grep -v internal)
 PKGS_NO_CMDS ?= $(shell go list ./... | grep -v $(PACKAGE_NAME)/cmd)
 BENCH_FLAGS ?= -benchmem
 
-VERSION ?= vlatest
-COMMIT := $(shell git rev-parse HEAD)
-BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+VERSION := $(if $(TRAVIS_TAG),$(TRAVIS_TAG),$(if $(TRAVIS_BRANCH),$(TRAVIS_BRANCH),development_in_$(shell git rev-parse --abbrev-ref HEAD)))
+COMMIT := $(if $(TRAVIS_COMMIT),$(TRAVIS_COMMIT),$(shell git rev-parse HEAD))
 BUILD_TIME := $(shell TZ=UTC date -u '+%Y-%m-%dT%H:%M:%SZ')
+
 M = $(shell printf "\033[32;1m▶▶▶\033[0m")
 M2 = $(shell printf "\033[32;1m▶▶▶▶▶▶\033[0m")
 
@@ -62,10 +63,35 @@ fmt: ; $(info $(M) formatting the code…)
 	@gofiles=$$(go list -f {{.Dir}} $(PKGS) | grep -v mock) && [ -z "$$gofiles" ] || for d in $$gofiles; do goimports -l -w $$d/*.go; done
 
 .PHONY: cmd
-CMDS ?= $(shell ls -d ./cmd/*/ | xargs -L1 basename | grep -v internal)
 cmd: ; $(info $(M) building the artifacts…)
 	mkdir -p $(ARTIFACTS_DIR)
 	$(foreach cmd,$(CMDS),go build -o $(ARTIFACTS_DIR)/$(cmd) ./cmd/$(cmd);)
+
+.PHONY: cmdx
+BUILD_PLATFORMS = "windows/amd64" "darwin/amd64" "linux/amd64"
+cmdx: clean ; $(info $(M) cross compiling…)
+	for cmd in $(CMDS); do \
+		for platform in $(BUILD_PLATFORMS); do \
+			platform_split=($${platform//\// }); \
+			GOOS=$${platform_split[0]}; \
+			GOARCH=$${platform_split[1]}; \
+			HUMAN_OS=$${GOOS}; \
+			if [ "$$HUMAN_OS" = "darwin" ]; then \
+				HUMAN_OS='macos'; \
+			fi; \
+			output_name=$(ARTIFACTS_DIR)/$${cmd}; \
+			if [ "$$GOOS" = "windows" ]; then \
+				output_name+='.exe'; \
+			fi; \
+			env GOOS=$$GOOS GOARCH=$$GOARCH go build -o $${output_name} ./cmd/$${cmd}; \
+			if [ "$$GOOS" = "windows" ]; then \
+				pushd ${ARTIFACTS_DIR}; zip $${cmd}-$${HUMAN_OS}-$${GOARCH}-$(VERSION).zip $${cmd}.exe; popd; \
+			else \
+				pushd ${ARTIFACTS_DIR}; tar cvzf $${cmd}-$${HUMAN_OS}-$${GOARCH}-$(VERSION).tgz $${cmd}; popd; \
+			fi; \
+			rm $${output_name}; \
+		done; \
+	done
 
 clean:
 	rm -rf $(ARTIFACTS_DIR)
